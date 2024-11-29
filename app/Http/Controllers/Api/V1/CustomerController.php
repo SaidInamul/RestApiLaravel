@@ -21,13 +21,14 @@ class CustomerController extends Controller
         //
         $filter = new CustomerFilter();
         $queryItems = $filter->transform($request);
-
+        
         if(count($queryItems) == 0) {
             return new CustomerCollection(Customer::paginate());
         }
 
         else {
-            return new CustomerCollection(Customer::where($queryItems)->get());
+            $customers = Customer::where($queryItems)->paginate();
+            return new CustomerCollection($customers->appends($request->query()));
         }
         
     }
