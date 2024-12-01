@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Invoice;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Filters\V1\InvoiceFilter;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Resources\V1\InvoiceResource;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Http\Resources\V1\InvoiceCollection;
+use App\Http\Requests\V1\BulkStoreInvoiceRequest;
 
 class InvoiceController extends Controller
 {
@@ -30,6 +31,8 @@ class InvoiceController extends Controller
             $invoices = Invoice::where($queryItems)->paginate();
             return new InvoiceCollection($invoices->appends($request->query()));
         }
+
+        // return Invoice::all()->count();
     }
 
     /**
@@ -46,6 +49,24 @@ class InvoiceController extends Controller
     public function store(StoreInvoiceRequest $request)
     {
         //
+    }
+
+    public function bulkStore(BulkStoreInvoiceRequest $request)
+    {
+        //      
+        if (Invoice::insert($request->toArray())) {
+            $response = [
+                'message' => 'New invoices added successfully'
+            ];
+        }
+
+        else {
+            $response = [
+                'message' => 'Fail to add new invoices'
+            ];
+        }
+
+        return response()->json($response);
     }
 
     /**
