@@ -11,6 +11,7 @@ use App\Http\Resources\V1\InvoiceResource;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Http\Resources\V1\InvoiceCollection;
 use App\Http\Requests\V1\BulkStoreInvoiceRequest;
+use App\Http\Requests\V1\BulkDestroyInvoiceRequest;
 
 class InvoiceController extends Controller
 {
@@ -35,22 +36,6 @@ class InvoiceController extends Controller
         // return Invoice::all()->count();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreInvoiceRequest $request)
-    {
-        //
-    }
-
     public function bulkStore(BulkStoreInvoiceRequest $request)
     {
         //      
@@ -70,23 +55,6 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Invoice $invoice)
-    {
-        //
-        return new InvoiceResource($invoice);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Invoice $invoice)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateInvoiceRequest $request, Invoice $invoice)
@@ -94,11 +62,27 @@ class InvoiceController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Invoice $invoice)
+    public function bulkDestroy(BulkDestroyInvoiceRequest $request)
     {
-        //
+        $ids = $request->validated()['ids'];
+    
+        // Perform the bulk delete
+        $deletedCount = Invoice::destroy($ids);
+
+        if ($deletedCount > 0) {
+            $response = [
+                'message' => 'Deleted successfully',
+                'deleted_count' => $deletedCount
+            ];
+        }
+
+        else {
+            $response = [
+                'message' => 'Deleted unsuccessfully',
+                'deleted_count' => $deletedCount
+            ];
+        }
+    
+        return response()->json($response);
     }
 }

@@ -86,5 +86,29 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         //
+
+        $user = auth()->user();
+
+        if ($user !== null && $user->tokenCan('delete')) {
+            if ($customer->delete()) {
+                $response = [
+                    'message' => 'Customer deleted successfully'
+                ];
+            }
+    
+            else {
+                $response = [
+                    'message' => 'Fail to delete'
+                ];
+            }
+        }
+
+        else {
+            $response = [
+                'message' => 'Unauthorized action'
+            ];
+        }
+
+        return response()->json($response);
     }
 }
